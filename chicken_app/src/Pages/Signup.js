@@ -1,6 +1,6 @@
 import { React, useState } from 'react'
 import { Box, Typography, TextField, Checkbox, FormControlLabel } from '@mui/material'
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from 'firebase/auth'
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut,  getAuth, sendEmailVerification } from 'firebase/auth'
 import {auth} from './../firestore';
 import { Button } from '@mui/material';
 import { Link } from 'react-router-dom';
@@ -66,7 +66,10 @@ function Signup(props) {
   const register = async () => {
     try{
       const user = await createUserWithEmailAndPassword(auth, email, password);
-      console.log(user)
+      sendEmailVerification(auth.currentUser)
+        .then(() => {
+          console.log('sent email')
+        });
     }catch (error){
       console.log(error.message);
     }
@@ -113,7 +116,7 @@ function Signup(props) {
       } control={
         <Checkbox onChange={(event) => {setIsCheckBoxClicked(isCheckBoxClicked => !isCheckBoxClicked)}}></Checkbox>
       }/>
-      <Button fullWidth onClick={handleSubmit} variant='contained' sx={{ ...format, fontWeight:700 }}>
+      <Button fullWidth onClick={hereTo === 'Login' ? login :  register } variant='contained' sx={{ ...format, fontWeight:700 }}>
         {hereTo === 'Login' ? "Log in" : "Create Account"}
       </Button>
       <Typography align='center' variant='p_default' sx={{marginTop: 5, display: hereTo === 'Login' ? 'none' : 'show' }}>
